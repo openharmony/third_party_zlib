@@ -838,9 +838,9 @@ extern unzFile ZEXPORT unzOpenFile (FILE *inputfile)
         return NULL;
     }
 
-    zlib_filefunc_def pzlib_filefunc32_def;
-    fill_fopen_filefunc(&pzlib_filefunc32_def);
-    fill_zlib_filefunc64_32_def_from_filefunc32(&us.z_filefunc, &pzlib_filefunc32_def);
+    us.z_filefunc.zseek32_file = NULL;
+    us.z_filefunc.ztell32_file = NULL;
+    fill_fopen64_filefunc(&us.z_filefunc.zfile_func64);
     us.is64bitOpenFunction = 0;
 
     us.filestream = inputfile;
