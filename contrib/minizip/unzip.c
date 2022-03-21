@@ -820,6 +820,206 @@ extern int ZEXPORT unzClose (unzFile file)
     return UNZ_OK;
 }
 
+/*
+  Open an opened zip file.
+*/
+extern unzFile ZEXPORT unzOpenFile (FILE *inputfile)
+{
+    unz64_s us;
+    unz64_s *s;
+    ZPOS64_T central_pos;
+    uLong uL;
+    uLong number_disk;
+    uLong number_disk_with_CD;
+    ZPOS64_T number_entry_CD;
+    int err = UNZ_OK;
+
+    if (unz_copyright[0] != ' ') {
+        return NULL;
+    }
+
+    us.z_filefunc.zseek32_file = NULL;
+    us.z_filefunc.ztell32_file = NULL;
+    fill_fopen64_filefunc(&us.z_filefunc.zfile_func64);
+    us.is64bitOpenFunction = 0;
+
+    us.filestream = inputfile;
+
+    if (us.filestream == NULL) {
+        return NULL;
+    }
+
+    central_pos = unz64local_SearchCentralDir64(&us.z_filefunc, us.filestream);
+    if (central_pos) {
+        uLong uS;
+        ZPOS64_T uL64;
+
+        us.isZip64 = 1;
+
+        if (ZSEEK64(us.z_filefunc, us.filestream, central_pos, ZLIB_FILEFUNC_SEEK_SET) != 0) {
+            err = UNZ_ERRNO;
+        }
+
+        /* the signature, already checked */
+        if (unz64local_getLong(&us.z_filefunc, us.filestream, &uL) != UNZ_OK) {
+            err = UNZ_ERRNO;
+        }
+
+        /* size of zip64 end of central directory record */
+        if (unz64local_getLong64(&us.z_filefunc, us.filestream, &uL64) != UNZ_OK) {
+            err = UNZ_ERRNO;
+        }
+
+        /* version made by */
+        if (unz64local_getShort(&us.z_filefunc, us.filestream, &uS) != UNZ_OK) {
+            err = UNZ_ERRNO;
+        }
+
+        /* version needed to extract */
+        if (unz64local_getShort(&us.z_filefunc, us.filestream, &uS) != UNZ_OK) {
+            err = UNZ_ERRNO;
+        }
+
+        /* number of this disk */
+        if (unz64local_getLong(&us.z_filefunc, us.filestream, &number_disk) != UNZ_OK) {
+            err = UNZ_ERRNO;
+        }
+
+        /* number of the disk with the start of the central directory */
+        if (unz64local_getLong(&us.z_filefunc, us.filestream, &number_disk_with_CD) != UNZ_OK) {
+            err = UNZ_ERRNO;
+        }
+
+        /* total number of entries in the central directory on this disk */
+        if (unz64local_getLong64(&us.z_filefunc, us.filestream, &us.gi.number_entry) != UNZ_OK) {
+            err = UNZ_ERRNO;
+        }
+
+        /* total number of entries in the central directory */
+        if (unz64local_getLong64(&us.z_filefunc, us.filestream, &number_entry_CD) != UNZ_OK) {
+            err = UNZ_ERRNO;
+        }
+
+        if ((number_entry_CD != us.gi.number_entry) || (number_disk_with_CD != 0) || (number_disk != 0)) {
+            err = UNZ_BADZIPFILE;
+        }
+
+        /* size of the central directory */
+        if (unz64local_getLong64(&us.z_filefunc, us.filestream, &us.size_central_dir) != UNZ_OK) {
+            err = UNZ_ERRNO;
+        }
+
+        /* offset of start of central directory with respect to the
+          starting disk number */
+        if (unz64local_getLong64(&us.z_filefunc, us.filestream, &us.offset_central_dir) != UNZ_OK) {
+            err = UNZ_ERRNO;
+        }
+
+        us.gi.size_comment = 0;
+    }
+    else {
+        central_pos = unz64local_SearchCentralDir(&us.z_filefunc, us.filestream);
+        if (central_pos == 0) {
+            err = UNZ_ERRNO;
+        }
+
+        us.isZip64 = 0;
+
+        if (ZSEEK64(us.z_filefunc, us.filestream, central_pos, ZLIB_FILEFUNC_SEEK_SET) != 0) {
+            err = UNZ_ERRNO;
+        }
+
+        /* the signature, already checked */
+        if (unz64local_getLong(&us.z_filefunc, us.filestream, &uL) != UNZ_OK) {
+            err = UNZ_ERRNO;
+        }
+
+        /* number of this disk */
+        if (unz64local_getShort(&us.z_filefunc, us.filestream, &number_disk) != UNZ_OK) {
+            err = UNZ_ERRNO;
+        }
+
+        /* number of the disk with the start of the central directory */
+        if (unz64local_getShort(&us.z_filefunc, us.filestream, &number_disk_with_CD) != UNZ_OK) {
+            err = UNZ_ERRNO;
+        }
+
+        /* total number of entries in the central dir on this disk */
+        if (unz64local_getShort(&us.z_filefunc, us.filestream, &uL) != UNZ_OK) {
+            err = UNZ_ERRNO;
+        }
+        us.gi.number_entry = uL;
+
+        /* total number of entries in the central dir */
+        if (unz64local_getShort(&us.z_filefunc, us.filestream, &uL) != UNZ_OK) {
+            err = UNZ_ERRNO;
+        }
+        number_entry_CD = uL;
+
+        if ((number_entry_CD != us.gi.number_entry) || (number_disk_with_CD != 0) || (number_disk != 0)) {
+            err = UNZ_BADZIPFILE;
+        }
+
+        /* size of the central directory */
+        if (unz64local_getLong(&us.z_filefunc, us.filestream, &uL) != UNZ_OK) {
+            err = UNZ_ERRNO;
+        }
+        us.size_central_dir = uL;
+
+        /* offset of start of central directory with respect to the starting disk number */
+        if (unz64local_getLong(&us.z_filefunc, us.filestream, &uL) != UNZ_OK) {
+            err = UNZ_ERRNO;
+        }
+        us.offset_central_dir = uL;
+
+        /* zipfile comment length */
+        if (unz64local_getShort(&us.z_filefunc, us.filestream, &us.gi.size_comment) != UNZ_OK) {
+            err = UNZ_ERRNO;
+        }
+    }
+
+    if ((central_pos < us.offset_central_dir + us.size_central_dir) && (err == UNZ_OK)) {
+        err = UNZ_BADZIPFILE;
+    }
+
+    if (err != UNZ_OK) {
+        ZCLOSE64(us.z_filefunc, us.filestream);
+        return NULL;
+    }
+
+    us.byte_before_the_zipfile = central_pos - (us.offset_central_dir + us.size_central_dir);
+    us.central_pos = central_pos;
+    us.pfile_in_zip_read = NULL;
+    us.encrypted = 0;
+
+    s=(unz64_s *)ALLOC(sizeof(unz64_s));
+    if(s != NULL) {
+        *s = us;
+        unzGoToFirstFile((unzFile)s);
+    }
+    return (unzFile)s;
+}
+
+/*
+  Close a ZipFile opened with unzOpenFile.
+  If there is files inside the .Zip opened with unzOpenCurrentFile(see before),
+    these files MUST be closed with unzCloseCurrentFile before call unzCloseFile.
+  return UNZ_OK if there is no problem. */
+extern int ZEXPORT unzCloseFile (unzFile file)
+{
+    unz64_s *s;
+    if (file == NULL) {
+        return UNZ_PARAMERROR;
+    }
+    s=(unz64_s *)file;
+
+    if (s->pfile_in_zip_read != NULL) {
+        unzCloseCurrentFile(file);
+    }
+
+    TRYFREE(s);
+    return UNZ_OK;
+}
 
 /*
   Write info about the ZipFile in the *pglobal_info structure.
@@ -1286,6 +1486,124 @@ extern int ZEXPORT unzLocateFile (unzFile file, const char *szFileName, int iCas
     return err;
 }
 
+/*
+  Set the current file of the zipfile to the first file and store current filename into szFileName.
+  return UNZ_OK if there is no problem
+*/
+local int unzGoToFirstFileInternal (unzFile file, char *szFileName, uLong fileNameBufferSize)
+{
+    int err = UNZ_OK;
+    unz64_s *s;
+    if (file == NULL) {
+        return UNZ_PARAMERROR;
+    }
+    s = (unz64_s *)file;
+    s->pos_in_central_dir = s->offset_central_dir;
+    s->num_file = 0;
+    err = unz64local_GetCurrentFileInfoInternal(file, &s->cur_file_info, &s->cur_file_info_internal,
+                                                szFileName, fileNameBufferSize, NULL, 0, NULL, 0);
+    s->current_file_ok = (err == UNZ_OK);
+    return err;
+}
+
+/*
+  Set the current file of the zipfile to the next file and store current filename into szFileName.
+  return UNZ_OK if there is no problem
+  return UNZ_END_OF_LIST_OF_FILE if the actual file was the latest.
+*/
+local int unzGoToNextFileInternal (unzFile  file, char *szFileName, uLong fileNameBufferSize)
+{
+    unz64_s *s;
+    int err;
+
+    if (file == NULL) {
+        return UNZ_PARAMERROR;
+    }
+    s=(unz64_s *)file;
+    if (!s->current_file_ok) {
+        return UNZ_END_OF_LIST_OF_FILE;
+    }
+    if (s->gi.number_entry != 0xffff) {    /* 2^16 files overflow hack */
+        if (s->num_file + 1 == s->gi.number_entry) {
+            return UNZ_END_OF_LIST_OF_FILE;
+        }
+    }
+
+    s->pos_in_central_dir += SIZECENTRALDIRITEM + s->cur_file_info.size_filename +
+            s->cur_file_info.size_file_extra + s->cur_file_info.size_file_comment;
+    s->num_file++;
+    err = unz64local_GetCurrentFileInfoInternal(file, &s->cur_file_info, &s->cur_file_info_internal,
+                                                szFileName, fileNameBufferSize, NULL, 0, NULL, 0);
+    s->current_file_ok = (err == UNZ_OK);
+    return err;
+}
+
+/*
+  Try locate the file szFileName in the zipfile, like unzLocateFile, but provide performance optimization.
+  For the iCaseSensitivity signification, see unzStringFileNameCompare
+
+  return value :
+  UNZ_OK if the file is found. It becomes the current file.
+  UNZ_END_OF_LIST_OF_FILE if the file is not found
+*/
+extern int ZEXPORT unzLocateFile2 (unzFile file, const char *szFileName, int iCaseSensitivity)
+{
+    unz64_s *s;
+    int err;
+
+    /* We remember the 'current' position in the file so that we can jump
+     * back there if we fail.
+     */
+    unz_file_info64 cur_file_infoSaved;
+    unz_file_info64_internal cur_file_info_internalSaved;
+    ZPOS64_T num_fileSaved;
+    ZPOS64_T pos_in_central_dirSaved;
+
+    if (file == NULL) {
+        return UNZ_PARAMERROR;
+    }
+
+    if (strlen(szFileName) >= UNZ_MAXFILENAMEINZIP) {
+        return UNZ_PARAMERROR;
+    }
+
+    s = (unz64_s *)file;
+    if (!s->current_file_ok) {
+        return UNZ_END_OF_LIST_OF_FILE;
+    }
+
+    /* Save the current state */
+    num_fileSaved = s->num_file;
+    pos_in_central_dirSaved = s->pos_in_central_dir;
+    cur_file_infoSaved = s->cur_file_info;
+    cur_file_info_internalSaved = s->cur_file_info_internal;
+
+    {
+        char szCurrentFileName[UNZ_MAXFILENAMEINZIP + 1];
+        err = unzGoToFirstFileInternal(file, szCurrentFileName, sizeof(szCurrentFileName) - 1);
+        if (unzStringFileNameCompare(szCurrentFileName, szFileName, iCaseSensitivity) == 0) {
+            return UNZ_OK;
+        }
+    }
+
+    while (err == UNZ_OK)
+    {
+        char szCurrentFileName[UNZ_MAXFILENAMEINZIP + 1];
+        err = unzGoToNextFileInternal(file, szCurrentFileName, sizeof(szCurrentFileName) - 1);
+        if (unzStringFileNameCompare(szCurrentFileName, szFileName, iCaseSensitivity) == 0) {
+            return UNZ_OK;
+        }
+    }
+
+    /* We failed, so restore the state of the 'current file' to where we
+     * were.
+     */
+    s->num_file = num_fileSaved;
+    s->pos_in_central_dir = pos_in_central_dirSaved;
+    s->cur_file_info = cur_file_infoSaved;
+    s->cur_file_info_internal = cur_file_info_internalSaved;
+    return err;
+}
 
 /*
 ///////////////////////////////////////////

@@ -202,6 +202,18 @@ extern int ZEXPORT unzClose OF((unzFile file));
     these files MUST be closed with unzCloseCurrentFile before call unzClose.
   return UNZ_OK if there is no problem. */
 
+extern unzFile ZEXPORT unzOpenFile OF((FILE *inputfile));
+/*
+  Open an opened zip file.
+*/
+
+extern int ZEXPORT unzCloseFile OF((unzFile file));
+/*
+  Close a ZipFile opened with unzOpenFile.
+  If there is files inside the .Zip opened with unzOpenCurrentFile(see before),
+    these files MUST be closed with unzCloseCurrentFile before call unzCloseFile.
+  return UNZ_OK if there is no problem. */
+
 extern int ZEXPORT unzGetGlobalInfo OF((unzFile file,
                                         unz_global_info *pglobal_info));
 
@@ -251,6 +263,17 @@ extern int ZEXPORT unzLocateFile OF((unzFile file,
   UNZ_END_OF_LIST_OF_FILE if the file is not found
 */
 
+extern int ZEXPORT unzLocateFile2 OF((unzFile file,
+                     const char *szFileName,
+                     int iCaseSensitivity));
+/*
+  Try locate the file szFileName in the zipfile, like unzLocateFile, but provide performance optimization.
+  For the iCaseSensitivity signification, see unzStringFileNameCompare
+
+  return value :
+  UNZ_OK if the file is found. It becomes the current file.
+  UNZ_END_OF_LIST_OF_FILE if the file is not found
+*/
 
 /* ****************************************** */
 /* Ryan supplied functions */
