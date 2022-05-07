@@ -13,11 +13,11 @@
         "en": "README"
     },
     "component": {
-        "name": "thirdparty_zlib",
-        "subsystem": "",
+        "name": "zlib",
+        "subsystem": "thirdparty",
         "syscap": [],
         "features": [],
-        "adapted_system_type": [],
+        "adapted_system_type": ["standard","appexecfwk_lite"],
         "rom": "",
         "ram": "",
         "deps": {

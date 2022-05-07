@@ -49,6 +49,9 @@ ohos_static_library("libz") {
   ]
   configs = [ ":zlib_config" ]
   public_configs = [ ":zlib_public_config" ]
+
+  part_name = "zlib"
+  subsystem_name = "thirdparty"
 }
 
 ohos_ndk_headers("zlib_header") {
