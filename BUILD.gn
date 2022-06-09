@@ -7,6 +7,7 @@ config("zlib_config") {
   cflags = [
     "-Wno-incompatible-pointer-types",
     "-Werror",
+    "-Wno-strict-prototypes",
     "-Wimplicit-function-declaration",
   ]
 }

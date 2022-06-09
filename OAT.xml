@@ -81,15 +81,12 @@ Note:If the text contains special characters, please escape them according to th
 		<filefilterlist>
 			<filefilter name="defaultFilter" desc="Files not to check">
 				<filteritem type="filepath" name="contrib/ada " desc="not used in ohos "/>
-				<filteritem type="filepath" name="contrib/asm686 " desc="not used in ohos "/>
 				<filteritem type="filepath" name="contrib/pascal " desc="not used in ohos "/>
 				<filteritem type="filepath" name="contrib/puff " desc="not used in ohos "/>
 				<filteritem type="filepath" name="contrib/blast " desc="not used in ohos "/>
-				<filteritem type="filepath" name="contrib/masmx64 " desc="not used in ohos "/>
 				<filteritem type="filepath" name="contrib/gcc_gvmat64 " desc="not used in ohos "/>
 				<filteritem type="filepath" name="contrib/iostream2 " desc="not used in ohos "/>
 				<filteritem type="filepath" name="examples " desc="not used in ohos "/>
-				<filteritem type="filepath" name="contrib/masmx86 " desc="not used in ohos "/>
 				<filteritem type="filepath" name="contrib/dotzlib " desc="not used in ohos "/>
 				<filteritem type="filepath" name="FAQ " desc="not used in ohos "/>
 				<filteritem type="filename" name="*.pdf" desc="not used in ohos "/>
