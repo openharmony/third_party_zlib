@@ -90,6 +90,13 @@ ohos_shared_library("shared_libz") {
   configs = [ ":zlib_config" ]
   public_configs = [ ":zlib_public_config" ]
 
+  install_images = [
+    "system",
+    "updater",
+  ]
+
+  symlink_target_name = [ "libz.so" ]
+
   part_name = "zlib"
   subsystem_name = "thirdparty"
 }
