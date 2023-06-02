@@ -97,6 +97,7 @@ ohos_shared_library("shared_libz") {
 
   symlink_target_name = [ "libz.so" ]
 
+  innerapi_tags = [ "platformsdk" ]
   part_name = "zlib"
   subsystem_name = "thirdparty"
 }
