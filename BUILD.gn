@@ -1,4 +1,4 @@
-# Copyright (c) 2019-2022 Huawei Device Co., Ltd. All rights reserved.
+# Copyright (c) 2023 Huawei Device Co., Ltd. All rights reserved.
 
 import("//build/ohos.gni")
 import("//build/ohos/ndk/ndk.gni")
