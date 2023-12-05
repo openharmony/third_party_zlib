@@ -15,9 +15,9 @@
     "component": {
         "name": "zlib",
         "subsystem": "thirdparty",
-        "syscap": [],
+        "syscap": ["SystemCapability.BundleManager.Zlib"],
         "features": [],
-        "adapted_system_type": ["mini", "standard"],
+        "adapted_system_type": ["standard"],
         "rom": "",
         "ram": "",
         "deps": {
