@@ -30,7 +30,6 @@
 #  define _POSIX_SOURCE
 #endif
 #include <fcntl.h>
-#include <unistd.h>
 
 #ifdef _WIN32
 #  include <stddef.h>
