@@ -1,5 +1,6 @@
 # Copyright (c) 2023 Huawei Device Co., Ltd. All rights reserved.
 
+import("//build/config/config.gni")
 import("//build/ohos.gni")
 import("//build/ohos/ndk/ndk.gni")
 
@@ -90,6 +91,14 @@ ohos_shared_library("shared_libz") {
   configs = [ ":zlib_config" ]
   public_configs = [ ":zlib_public_config" ]
 
+  if (current_os == "ios") {
+    ldflags = [
+      "-Wl",
+      "-install_name",
+      "@rpath/libshared_libz.framework/libshared_libz",
+    ]
+  }
+
   install_images = [
     "system",
     "updater",
@@ -100,6 +109,14 @@ ohos_shared_library("shared_libz") {
   innerapi_tags = [ "platformsdk" ]
   part_name = "zlib"
   subsystem_name = "thirdparty"
+}
+
+if (current_os == "ios") {
+  ohos_combine_darwin_framework("libshared_libz") {
+    deps = [ ":shared_libz" ]
+    subsystem_name = "thirdparty"
+    part_name = "zlib"
+  }
 }
 
 ohos_ndk_headers("zlib_header") {
