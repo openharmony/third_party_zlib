@@ -121,16 +121,3 @@ if (current_os == "ios") {
     part_name = "zlib"
   }
 }
-
-ohos_ndk_headers("zlib_header") {
-  sources = [
-    "./zconf.h",
-    "./zlib.h",
-  ]
-}
-
-ohos_ndk_library("libz_ndk") {
-  output_name = "z"
-  ndk_description_file = "./zlib.ndk.json"
-  output_extension = "so"
-}
