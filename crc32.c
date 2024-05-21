@@ -110,7 +110,8 @@
   instruction, if one is available. This assumes that word_t is either 32 bits
   or 64 bits.
  */
-local z_word_t byte_swap(z_word_t word) {
+local z_word_t byte_swap(z_word_t word)
+{
 #  if W == 8
     return
         (word & 0xff00000000000000) >> 56 |
@@ -152,7 +153,8 @@ local z_word_t byte_swap(z_word_t word) {
   Return a(x) multiplied by b(x) modulo p(x), where p(x) is the CRC polynomial,
   reflected. For speed, this requires that a not be zero.
  */
-local z_crc_t multmodp(z_crc_t a, z_crc_t b) {
+local z_crc_t multmodp(z_crc_t a, z_crc_t b)
+{
     z_crc_t m, p;
 
     m = (z_crc_t)1 << 31;
@@ -173,7 +175,8 @@ local z_crc_t multmodp(z_crc_t a, z_crc_t b) {
   Return x^(n * 2^k) modulo p(x). Requires that x2n_table[] has been
   initialized.
  */
-local z_crc_t x2nmodp(z_off64_t n, unsigned k) {
+local z_crc_t x2nmodp(z_off64_t n, unsigned k)
+{
     z_crc_t p;
 
     p = (z_crc_t)1 << 31;           /* x^0 == 1 */
@@ -233,7 +236,8 @@ struct once_s {
   invoke once() at the same time. The state must be a once_t initialized with
   ONCE_INIT.
  */
-local void once(once_t *state, void (*init)(void)) {
+local void once(once_t *state, void (*init)(void))
+{
     if (!atomic_load(&state->done)) {
         if (atomic_flag_test_and_set(&state->begun))
             while (!atomic_load(&state->done))
@@ -256,7 +260,8 @@ struct once_s {
 
 /* Test and set. Alas, not atomic, but tries to minimize the period of
    vulnerability. */
-local int test_and_set(int volatile *flag) {
+local int test_and_set(int volatile *flag)
+{
     int was;
 
     was = *flag;
@@ -265,7 +270,8 @@ local int test_and_set(int volatile *flag) {
 }
 
 /* Run the provided init() function once. This is not thread-safe. */
-local void once(once_t *state, void (*init)(void)) {
+local void once(once_t *state, void (*init)(void))
+{
     if (!state->done) {
         if (test_and_set(&state->begun))
             while (!state->done)
@@ -307,7 +313,8 @@ local once_t made = ONCE_INIT;
   combinations of CRC register values and incoming bytes.
  */
 
-local void make_crc_table(void) {
+local void make_crc_table(void)
+{
     unsigned i, j, n;
     z_crc_t p;
 
@@ -513,7 +520,8 @@ local void write_table64(FILE *out, const z_word_t FAR *table, int k) {
 }
 
 /* Actually do the deed. */
-int main(void) {
+int main(void)
+{
     make_crc_table();
     return 0;
 }
@@ -525,7 +533,8 @@ int main(void) {
   Generate the little and big-endian braid tables for the given n and z_word_t
   size w. Each array must have room for w blocks of 256 elements.
  */
-local void braid(z_crc_t ltl[][256], z_word_t big[][256], int n, int w) {
+local void braid(z_crc_t ltl[][256], z_word_t big[][256], int n, int w)
+{
     int k;
     z_crc_t i, p, q;
     for (k = 0; k < w; k++) {
@@ -673,14 +682,16 @@ unsigned long ZEXPORT crc32_z(unsigned long crc, const unsigned char FAR *buf,
   least-significant byte of the word as the first byte of data, without any pre
   or post conditioning. This is used to combine the CRCs of each braid.
  */
-local z_crc_t crc_word(z_word_t data) {
+local z_crc_t crc_word(z_word_t data)
+{
     int k;
     for (k = 0; k < W; k++)
         data = (data >> 8) ^ crc_table[data & 0xff];
     return (z_crc_t)data;
 }
 
-local z_word_t crc_word_big(z_word_t data) {
+local z_word_t crc_word_big(z_word_t data)
+{
     int k;
     for (k = 0; k < W; k++)
         data = (data << 8) ^

@@ -199,7 +199,8 @@ typedef struct
 
 local int unz64local_getShort(const zlib_filefunc64_32_def* pzlib_filefunc_def,
                               voidpf filestream,
-                              uLong *pX) {
+                              uLong *pX) 
+{
     unsigned char c[2];
     int err = (int)ZREAD64(*pzlib_filefunc_def,filestream,c,2);
     if (err==2)
@@ -219,7 +220,8 @@ local int unz64local_getShort(const zlib_filefunc64_32_def* pzlib_filefunc_def,
 
 local int unz64local_getLong(const zlib_filefunc64_32_def* pzlib_filefunc_def,
                              voidpf filestream,
-                             uLong *pX) {
+                             uLong *pX) 
+{
     unsigned char c[4];
     int err = (int)ZREAD64(*pzlib_filefunc_def,filestream,c,4);
     if (err==4)
@@ -240,7 +242,8 @@ local int unz64local_getLong(const zlib_filefunc64_32_def* pzlib_filefunc_def,
 
 local int unz64local_getLong64(const zlib_filefunc64_32_def* pzlib_filefunc_def,
                                voidpf filestream,
-                               ZPOS64_T *pX) {
+                               ZPOS64_T *pX)
+{
     unsigned char c[8];
     int err = (int)ZREAD64(*pzlib_filefunc_def,filestream,c,8);
     if (err==8)
@@ -260,7 +263,8 @@ local int unz64local_getLong64(const zlib_filefunc64_32_def* pzlib_filefunc_def,
 }
 
 /* My own strcmpi / strcasecmp */
-local int strcmpcasenosensitive_internal(const char* fileName1, const char* fileName2) {
+local int strcmpcasenosensitive_internal(const char* fileName1, const char* fileName2) 
+{
     for (;;)
     {
         char c1=*(fileName1++);
@@ -324,7 +328,8 @@ extern int ZEXPORT unzStringFileNameCompare (const char*  fileName1,
   Locate the Central directory of a zipfile (at the end, just before
     the global comment)
 */
-local ZPOS64_T unz64local_SearchCentralDir(const zlib_filefunc64_32_def* pzlib_filefunc_def, voidpf filestream) {
+local ZPOS64_T unz64local_SearchCentralDir(const zlib_filefunc64_32_def* pzlib_filefunc_def, voidpf filestream) 
+{
     unsigned char* buf;
     ZPOS64_T uSizeFile;
     ZPOS64_T uBackRead;
@@ -385,7 +390,8 @@ local ZPOS64_T unz64local_SearchCentralDir(const zlib_filefunc64_32_def* pzlib_f
     the global comment)
 */
 local ZPOS64_T unz64local_SearchCentralDir64(const zlib_filefunc64_32_def* pzlib_filefunc_def,
-                                             voidpf filestream) {
+                                             voidpf filestream)
+{
     unsigned char* buf;
     ZPOS64_T uSizeFile;
     ZPOS64_T uBackRead;
@@ -491,7 +497,8 @@ local ZPOS64_T unz64local_SearchCentralDir64(const zlib_filefunc64_32_def* pzlib
 */
 local unzFile unzOpenInternal(const void *path,
                               zlib_filefunc64_32_def* pzlib_filefunc64_32_def,
-                              int is64bitOpenFunction) {
+                              int is64bitOpenFunction)
+{
     unz64_s us;
     unz64_s *s;
     ZPOS64_T central_pos;
@@ -949,7 +956,8 @@ extern int ZEXPORT unzGetGlobalInfo(unzFile file, unz_global_info* pglobal_info3
 /*
    Translate date/time from Dos format to tm_unz (readable more easily)
 */
-local void unz64local_DosDateToTmuDate(ZPOS64_T ulDosDate, tm_unz* ptm) {
+local void unz64local_DosDateToTmuDate(ZPOS64_T ulDosDate, tm_unz* ptm) 
+{
     ZPOS64_T uDate;
     uDate = (ZPOS64_T)(ulDosDate>>16);
     ptm->tm_mday = (int)(uDate&0x1f) ;
@@ -973,7 +981,8 @@ local int unz64local_GetCurrentFileInfoInternal(unzFile file,
                                                 void *extraField,
                                                 uLong extraFieldBufferSize,
                                                 char *szComment,
-                                                uLong commentBufferSize) {
+                                                uLong commentBufferSize)
+{
     unz64_s* s;
     unz_file_info64 file_info;
     unz_file_info64_internal file_info_internal;
@@ -1574,7 +1583,8 @@ extern int ZEXPORT unzGoToFilePos(unzFile file, unz_file_pos* file_pos) {
 */
 local int unz64local_CheckCurrentFileCoherencyHeader(unz64_s* s, uInt* piSizeVar,
                                                      ZPOS64_T * poffset_local_extrafield,
-                                                     uInt  * psize_local_extrafield) {
+                                                     uInt  * psize_local_extrafield)
+{
     uLong uMagic,uData,uFlags;
     uLong size_filename;
     uLong size_extra_field;

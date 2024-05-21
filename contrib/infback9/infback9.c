@@ -47,7 +47,8 @@ int ZEXPORT inflateBack9Init_(z_stream FAR *strm, unsigned char FAR *window,
 #ifdef MAKEFIXED
 #include <stdio.h>
 
-void makefixed9(void) {
+void makefixed9(void) 
+{
     unsigned sym, bits, low, size;
     code *next, *lenfix, *distfix;
     struct inflate_state state;

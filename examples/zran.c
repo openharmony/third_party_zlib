@@ -65,7 +65,8 @@
 #define CHUNK 16384         // file input buffer size
 
 // See comments in zran.h.
-void deflate_index_free(struct deflate_index *index) {
+void deflate_index_free(struct deflate_index *index)
+{
     if (index != NULL) {
         free(index->list);
         free(index);
@@ -78,7 +79,8 @@ void deflate_index_free(struct deflate_index *index) {
 // index->mode is set to the mode of inflation.
 static struct deflate_index *add_point(struct deflate_index *index, int bits,
                                        off_t in, off_t out, unsigned left,
-                                       unsigned char *window) {
+                                       unsigned char *window)
+{
     if (index == NULL) {
         // The list is empty. Create it, starting with eight access points.
         index = malloc(sizeof(struct deflate_index));
@@ -129,7 +131,8 @@ static struct deflate_index *add_point(struct deflate_index *index, int bits,
 #define GZIP 31
 
 // See comments in zran.h.
-int deflate_index_build(FILE *in, off_t span, struct deflate_index **built) {
+int deflate_index_build(FILE *in, off_t span, struct deflate_index **built)
+{
     // Set up inflation state.
     z_stream strm = {0};        // inflate engine (gets fired up later)
     unsigned char buf[CHUNK];   // input buffer
@@ -273,7 +276,8 @@ static inline void append_bits(unsigned value, int bits,
 // a negative value of bits is not supported. bits must be in 0..16. If the
 // arguments are invalid, Z_STREAM_ERROR is returned. Otherwise the return
 // value from inflate() is returned.
-static int inflatePreface(z_stream *strm, int bits, int value) {
+static int inflatePreface(z_stream *strm, int bits, int value)
+{
     // Check input.
     if (strm == Z_NULL || bits < 0 || bits > 16)
         return Z_STREAM_ERROR;
@@ -328,7 +332,8 @@ static int inflatePreface(z_stream *strm, int bits, int value) {
 
 // See comments in zran.h.
 ptrdiff_t deflate_index_extract(FILE *in, struct deflate_index *index,
-                                off_t offset, unsigned char *buf, size_t len) {
+                                off_t offset, unsigned char *buf, size_t len)
+{
     // Do a quick sanity check on the index.
     if (index == NULL || index->have < 1 || index->list[0].out != 0)
         return Z_STREAM_ERROR;
@@ -463,7 +468,8 @@ ptrdiff_t deflate_index_extract(FILE *in, struct deflate_index *index,
 // from 2/3rds of the way through the uncompressed output, writing that to
 // stdout. An offset can be provided as the second argument, in which case the
 // data is extracted from there instead.
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     // Open the input file.
     if (argc < 2 || argc > 3) {
         fprintf(stderr, "usage: zran file.raw [offset]\n");

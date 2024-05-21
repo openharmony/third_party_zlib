@@ -28,7 +28,8 @@
 
 #include "ioapi.h"
 
-voidpf call_zopen64 (const zlib_filefunc64_32_def* pfilefunc, const void*filename, int mode) {
+voidpf call_zopen64 (const zlib_filefunc64_32_def* pfilefunc, const void*filename, int mode) 
+{
     if (pfilefunc->zfile_func64.zopen64_file != NULL)
         return (*(pfilefunc->zfile_func64.zopen64_file)) (pfilefunc->zfile_func64.opaque,filename,mode);
     else
@@ -37,7 +38,8 @@ voidpf call_zopen64 (const zlib_filefunc64_32_def* pfilefunc, const void*filenam
     }
 }
 
-long call_zseek64 (const zlib_filefunc64_32_def* pfilefunc,voidpf filestream, ZPOS64_T offset, int origin) {
+long call_zseek64 (const zlib_filefunc64_32_def* pfilefunc,voidpf filestream, ZPOS64_T offset, int origin) 
+{
     if (pfilefunc->zfile_func64.zseek64_file != NULL)
         return (*(pfilefunc->zfile_func64.zseek64_file)) (pfilefunc->zfile_func64.opaque,filestream,offset,origin);
     else
@@ -50,7 +52,8 @@ long call_zseek64 (const zlib_filefunc64_32_def* pfilefunc,voidpf filestream, ZP
     }
 }
 
-ZPOS64_T call_ztell64 (const zlib_filefunc64_32_def* pfilefunc, voidpf filestream) {
+ZPOS64_T call_ztell64 (const zlib_filefunc64_32_def* pfilefunc, voidpf filestream) 
+{
     if (pfilefunc->zfile_func64.zseek64_file != NULL)
         return (*(pfilefunc->zfile_func64.ztell64_file)) (pfilefunc->zfile_func64.opaque,filestream);
     else
@@ -63,7 +66,8 @@ ZPOS64_T call_ztell64 (const zlib_filefunc64_32_def* pfilefunc, voidpf filestrea
     }
 }
 
-void fill_zlib_filefunc64_32_def_from_filefunc32(zlib_filefunc64_32_def* p_filefunc64_32, const zlib_filefunc_def* p_filefunc32) {
+void fill_zlib_filefunc64_32_def_from_filefunc32(zlib_filefunc64_32_def* p_filefunc64_32, const zlib_filefunc_def* p_filefunc32) 
+{
     p_filefunc64_32->zfile_func64.zopen64_file = NULL;
     p_filefunc64_32->zopen32_file = p_filefunc32->zopen_file;
     p_filefunc64_32->zfile_func64.zread_file = p_filefunc32->zread_file;
@@ -208,7 +212,8 @@ static int ZCALLBACK ferror_file_func(voidpf opaque, voidpf stream) {
     return ret;
 }
 
-void fill_fopen_filefunc(zlib_filefunc_def* pzlib_filefunc_def) {
+void fill_fopen_filefunc(zlib_filefunc_def* pzlib_filefunc_def) 
+{
     pzlib_filefunc_def->zopen_file = fopen_file_func;
     pzlib_filefunc_def->zread_file = fread_file_func;
     pzlib_filefunc_def->zwrite_file = fwrite_file_func;
@@ -219,7 +224,8 @@ void fill_fopen_filefunc(zlib_filefunc_def* pzlib_filefunc_def) {
     pzlib_filefunc_def->opaque = NULL;
 }
 
-void fill_fopen64_filefunc(zlib_filefunc64_def* pzlib_filefunc_def) {
+void fill_fopen64_filefunc(zlib_filefunc64_def* pzlib_filefunc_def) 
+{
     pzlib_filefunc_def->zopen64_file = fopen64_file_func;
     pzlib_filefunc_def->zread_file = fread_file_func;
     pzlib_filefunc_def->zwrite_file = fwrite_file_func;
