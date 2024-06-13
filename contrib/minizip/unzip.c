@@ -199,7 +199,7 @@ typedef struct
 
 local int unz64local_getShort(const zlib_filefunc64_32_def* pzlib_filefunc_def,
                               voidpf filestream,
-                              uLong *pX) 
+                              uLong *pX)
 {
     unsigned char c[2];
     int err = (int)ZREAD64(*pzlib_filefunc_def,filestream,c,2);
@@ -220,7 +220,7 @@ local int unz64local_getShort(const zlib_filefunc64_32_def* pzlib_filefunc_def,
 
 local int unz64local_getLong(const zlib_filefunc64_32_def* pzlib_filefunc_def,
                              voidpf filestream,
-                             uLong *pX) 
+                             uLong *pX)
 {
     unsigned char c[4];
     int err = (int)ZREAD64(*pzlib_filefunc_def,filestream,c,4);
@@ -263,7 +263,7 @@ local int unz64local_getLong64(const zlib_filefunc64_32_def* pzlib_filefunc_def,
 }
 
 /* My own strcmpi / strcasecmp */
-local int strcmpcasenosensitive_internal(const char* fileName1, const char* fileName2) 
+local int strcmpcasenosensitive_internal(const char* fileName1, const char* fileName2)
 {
     for (;;)
     {
@@ -328,7 +328,7 @@ extern int ZEXPORT unzStringFileNameCompare (const char*  fileName1,
   Locate the Central directory of a zipfile (at the end, just before
     the global comment)
 */
-local ZPOS64_T unz64local_SearchCentralDir(const zlib_filefunc64_32_def* pzlib_filefunc_def, voidpf filestream) 
+local ZPOS64_T unz64local_SearchCentralDir(const zlib_filefunc64_32_def* pzlib_filefunc_def, voidpf filestream)
 {
     unsigned char* buf;
     ZPOS64_T uSizeFile;
@@ -759,7 +759,7 @@ extern unzFile ZEXPORT unzOpenFile (FILE *inputfile)
     }
 
     central_pos = unz64local_SearchCentralDir64(&us.z_filefunc, us.filestream);
-    if (central_pos) {
+    if (central_pos != CENTRALDIRINVALID) {
         uLong uS;
         ZPOS64_T uL64;
 
@@ -828,7 +828,7 @@ extern unzFile ZEXPORT unzOpenFile (FILE *inputfile)
     }
     else {
         central_pos = unz64local_SearchCentralDir(&us.z_filefunc, us.filestream);
-        if (central_pos == 0) {
+        if (central_pos == CENTRALDIRINVALID) {
             err = UNZ_ERRNO;
         }
 
@@ -956,7 +956,7 @@ extern int ZEXPORT unzGetGlobalInfo(unzFile file, unz_global_info* pglobal_info3
 /*
    Translate date/time from Dos format to tm_unz (readable more easily)
 */
-local void unz64local_DosDateToTmuDate(ZPOS64_T ulDosDate, tm_unz* ptm) 
+local void unz64local_DosDateToTmuDate(ZPOS64_T ulDosDate, tm_unz* ptm)
 {
     ZPOS64_T uDate;
     uDate = (ZPOS64_T)(ulDosDate>>16);
