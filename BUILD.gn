@@ -124,3 +124,37 @@ if (current_os == "ios") {
     part_name = "zlib"
   }
 }
+
+if (current_cpu == "arm64") {
+  config("zlib_crc_config") {
+    cflags = [
+      "-Wno-incompatible-pointer-types",
+      "-Werror",
+      "-Wno-strict-prototypes",
+      "-Wimplicit-function-declaration",
+      "-march=armv8-a+crc",
+    ]
+  }
+} else {
+  config("zlib_crc_config") {
+    cflags = [
+      "-Wno-incompatible-pointer-types",
+      "-Werror",
+      "-Wno-strict-prototypes",
+      "-Wimplicit-function-declaration",
+    ]
+  }
+}
+
+ohos_static_library("libz_crc") {
+  sources = [
+    "crc32.c",
+    "crc32.h",
+    "zconf.h",
+  ]
+  configs = [ ":zlib_crc_config" ]
+  public_configs = [ ":zlib_public_config" ]
+
+  part_name = "zlib"
+  subsystem_name = "thirdparty"
+}
