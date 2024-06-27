@@ -40,6 +40,13 @@
                         "header_files": ""
                     },
                     "name": "//third_party/zlib:shared_libz"
+                },
+                {
+                    "header": {
+                        "header_base": "//third_party/zlib",
+                        "header_files": ""
+                    },
+                    "name": "//third_party/zlib:libz_crc"
                 }
             ],
             "test": []
