@@ -60,6 +60,7 @@ ohos_static_library("libz") {
 }
 
 ohos_shared_library("shared_libz") {
+  branch_protector_ret = "pac_ret"
   sources = [
     "adler32.c",
     "compress.c",
