@@ -1,15 +1,14 @@
 /*
    minizip.c
-   Version 1.1, February 14h, 2010
-   sample part of the MiniZip project - ( http://www.winimage.com/zLibDll/minizip.html )
+   sample part of the MiniZip project - ( https://www.winimage.com/zLibDll/minizip.html )
 
-         Copyright (C) 1998-2010 Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
+         Copyright (C) 1998-2026 Gilles Vollant (minizip) ( https://www.winimage.com/zLibDll/minizip.html )
 
          Modifications of Unzip for Zip64
          Copyright (C) 2007-2008 Even Rouault
 
          Modifications for Zip64 support on both zip and unzip
-         Copyright (C) 2009-2010 Mathias Svensson ( http://result42.com )
+         Copyright (C) 2009-2010 Mathias Svensson ( https://result42.com )
 */
 
 
@@ -41,6 +40,9 @@
 
 
 
+#ifndef _CRT_SECURE_NO_WARNINGS
+#  define _CRT_SECURE_NO_WARNINGS
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -59,6 +61,7 @@
 #endif
 
 #include "zip.h"
+#include "ints.h"
 
 #ifdef _WIN32
         #define USEWIN32IOAPI
@@ -73,8 +76,9 @@
 #ifdef _WIN32
 /* f: name of file to get info on, tmzip: return value: access,
    modification and creation times, dt: dostime */
-static int filetime(const char *f, tm_zip *tmzip, uLong *dt) 
+static int filetime(const char *f, tm_zip *tmzip, uLong *dt)
 {
+  (void)tmzip;
   int ret = 0;
   {
       FILETIME ftLocal;
@@ -92,8 +96,7 @@ static int filetime(const char *f, tm_zip *tmzip, uLong *dt)
   }
   return ret;
 }
-#else
-#if defined(unix) || defined(__APPLE__)
+#elif defined(__unix__) || defined(__unix) || defined(__APPLE__)
 /* f: name of file to get info on, tmzip: return value: access,
    modification and creation times, dt: dostime */
 static int filetime(const char *f, tm_zip *tmzip, uLong *dt) 
@@ -253,9 +256,9 @@ int main(int argc, char *argv[])
     char filename_try[MAXFILENAME + 16];
     int zipok;
     int err = 0;
-    size_t size_buf = 0;
-    void* buf = NULL;
-    const char* password = NULL;
+    unsigned long size_buf=0;
+    void* buf=NULL;
+    const char* password=NULL;
 
 
     do_banner();
@@ -315,7 +318,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        int i,len;
+        int len;
         int dot_found=0;
 
         zipok = 1 ;
@@ -441,7 +444,7 @@ int main(int argc, char *argv[])
                      }
                      if( lastslash != NULL )
                      {
-                         savefilenameinzip = lastslash+1; // base filename follows last slash.
+                         savefilenameinzip = lastslash+1; /* base filename follows last slash. */
                      }
                  }
 
@@ -514,5 +517,5 @@ int main(int argc, char *argv[])
     }
 
     free(buf);
-    return 0;
+    return err;
 }
