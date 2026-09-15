@@ -445,7 +445,7 @@ ZEXTERN int ZEXPORT inflate(z_streamp strm, int flush);
 
     The Z_BLOCK option assists in appending to or combining deflate streams.
   To assist in this, on return inflate() always sets strm->data_type to the
-  number of unused bits in the last byte taken from strm->next_in, plus 64 if
+  number of unused bits in the input taken from strm->next_in, plus 64 if
   inflate() is currently decoding the last block in the deflate stream, plus
   128 if inflate() returned immediately after decoding an end-of-block code or
   decoding the complete header up to just before the first byte of the deflate

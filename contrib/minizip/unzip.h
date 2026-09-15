@@ -196,23 +196,23 @@ extern unzFile ZEXPORT unzOpen2_64(const void *path,
       for read/write the zip file (see ioapi.h)
 */
 
+/* OpenHarmony extensions. unzOpenFile uses an already opened FILE and may
+   move its position. On a ZIP parse error it closes that FILE, matching the
+   historical contract. After success, unzCloseFile frees the unzip state but
+   leaves the FILE open for the caller. */
+extern unzFile ZEXPORT unzOpenFile(FILE *inputfile);
+extern int ZEXPORT unzCloseFile(unzFile file);
+
+/* Locate a name while obtaining it during directory traversal. On success the
+   entry becomes current. The comparison mode matches unzLocateFile(). */
+extern int ZEXPORT unzLocateFile2(unzFile file, const char *szFileName,
+                                  int iCaseSensitivity);
+
 extern int ZEXPORT unzClose(unzFile file);
 /*
   Close a ZipFile opened with unzOpen.
   If there is files inside the .Zip opened with unzOpenCurrentFile (see later),
     these files MUST be closed with unzCloseCurrentFile before call unzClose.
-  return UNZ_OK if there is no problem. */
-
-extern unzFile ZEXPORT unzOpenFile OF((FILE *inputfile));
-/*
-  Open an opened zip file.
-*/
-
-extern int ZEXPORT unzCloseFile OF((unzFile file));
-/*
-  Close a ZipFile opened with unzOpenFile.
-  If there is files inside the .Zip opened with unzOpenCurrentFile(see before),
-    these files MUST be closed with unzCloseCurrentFile before call unzCloseFile.
   return UNZ_OK if there is no problem. */
 
 extern int ZEXPORT unzGetGlobalInfo(unzFile file,
@@ -264,17 +264,6 @@ extern int ZEXPORT unzLocateFile(unzFile file,
   UNZ_END_OF_LIST_OF_FILE if the file is not found
 */
 
-extern int ZEXPORT unzLocateFile2 OF((unzFile file,
-                     const char *szFileName,
-                     int iCaseSensitivity));
-/*
-  Try locate the file szFileName in the zipfile, like unzLocateFile, but provide performance optimization.
-  For the iCaseSensitivity signification, see unzStringFileNameCompare
-
-  return value :
-  UNZ_OK if the file is found. It becomes the current file.
-  UNZ_END_OF_LIST_OF_FILE if the file is not found
-*/
 
 /* ****************************************** */
 /* Ryan supplied functions */

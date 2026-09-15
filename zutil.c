@@ -127,8 +127,7 @@ uLong ZEXPORT zlibCompileFlags(void) {
 #  endif
 int ZLIB_INTERNAL z_verbose = verbose;
 
-void ZLIB_INTERNAL z_error(char *m)
-{
+void ZLIB_INTERNAL z_error(char *m) {
     fprintf(stderr, "%s\n", m);
     exit(1);
 }
@@ -137,8 +136,7 @@ void ZLIB_INTERNAL z_error(char *m)
 /* exported to allow conversion of error code to string for compress() and
  * uncompress()
  */
-const char * ZEXPORT zError(int err)
-{
+const char * ZEXPORT zError(int err) {
     return ERR_MSG(err);
 }
 
@@ -152,8 +150,7 @@ const char * ZEXPORT zError(int err)
 
 #ifndef HAVE_MEMCPY
 
-void ZLIB_INTERNAL zmemcpy(void FAR *dst, const void FAR *src, z_size_t n)
-{
+void ZLIB_INTERNAL zmemcpy(void FAR *dst, const void FAR *src, z_size_t n) {
     uchf *p = dst;
     const uchf *q = src;
     while (n) {
@@ -162,8 +159,7 @@ void ZLIB_INTERNAL zmemcpy(void FAR *dst, const void FAR *src, z_size_t n)
     }
 }
 
-int ZLIB_INTERNAL zmemcmp(const void FAR *s1, const void FAR *s2, z_size_t n)
-{
+int ZLIB_INTERNAL zmemcmp(const void FAR *s1, const void FAR *s2, z_size_t n) {
     const uchf *p = s1, *q = s2;
     while (n) {
         if (*p++ != *q++)
@@ -173,8 +169,7 @@ int ZLIB_INTERNAL zmemcmp(const void FAR *s1, const void FAR *s2, z_size_t n)
     return 0;
 }
 
-void ZLIB_INTERNAL zmemzero(void FAR *b, z_size_t len)
-{
+void ZLIB_INTERNAL zmemzero(void FAR *b, z_size_t len) {
     uchf *p = b;
     if (len == 0) return;
     while (len) {
@@ -218,8 +213,7 @@ local ptr_table table[MAX_PTR];
  * a protected system like OS/2. Use Microsoft C instead.
  */
 
-voidpf ZLIB_INTERNAL zcalloc(voidpf opaque, unsigned items, unsigned size)
-{
+voidpf ZLIB_INTERNAL zcalloc(voidpf opaque, unsigned items, unsigned size) {
     voidpf buf;
     ulg bsize = (ulg)items*size;
 
@@ -244,8 +238,7 @@ voidpf ZLIB_INTERNAL zcalloc(voidpf opaque, unsigned items, unsigned size)
     return buf;
 }
 
-void ZLIB_INTERNAL zcfree(voidpf opaque, voidpf ptr)
-{
+void ZLIB_INTERNAL zcfree(voidpf opaque, voidpf ptr) {
     int n;
 
     (void)opaque;
@@ -281,14 +274,12 @@ void ZLIB_INTERNAL zcfree(voidpf opaque, voidpf ptr)
 #  define _hfree   hfree
 #endif
 
-voidpf ZLIB_INTERNAL zcalloc(voidpf opaque, uInt items, uInt size)
-{
+voidpf ZLIB_INTERNAL zcalloc(voidpf opaque, uInt items, uInt size) {
     (void)opaque;
     return _halloc((long)items, size);
 }
 
-void ZLIB_INTERNAL zcfree(voidpf opaque, voidpf ptr)
-{
+void ZLIB_INTERNAL zcfree(voidpf opaque, voidpf ptr) {
     (void)opaque;
     _hfree(ptr);
 }
@@ -306,15 +297,13 @@ extern voidp calloc(uInt items, uInt size);
 extern void free(voidpf ptr);
 #endif
 
-voidpf ZLIB_INTERNAL zcalloc(voidpf opaque, unsigned items, unsigned size)
-{
+voidpf ZLIB_INTERNAL zcalloc(voidpf opaque, unsigned items, unsigned size) {
     (void)opaque;
     return sizeof(uInt) > 2 ? (voidpf)malloc(items * size) :
                               (voidpf)calloc(items, size);
 }
 
-void ZLIB_INTERNAL zcfree(voidpf opaque, voidpf ptr)
-{
+void ZLIB_INTERNAL zcfree(voidpf opaque, voidpf ptr) {
     (void)opaque;
     free(ptr);
 }

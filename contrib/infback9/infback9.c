@@ -47,8 +47,7 @@ int ZEXPORT inflateBack9Init_(z_stream FAR *strm, unsigned char FAR *window,
 #ifdef MAKEFIXED
 #include <stdio.h>
 
-void makefixed9(void) 
-{
+void makefixed9(void) {
     unsigned sym, bits, low, size;
     code *next, *lenfix, *distfix;
     struct inflate_state state;
@@ -342,7 +341,7 @@ int ZEXPORT inflateBack9(z_stream FAR *strm, in_func in, void FAR *in_desc,
             state->ncode = BITS(4) + 4;
             DROPBITS(4);
             if (state->nlen > 286) {
-                strm->msg = (char *)"too many length symbols";
+                strm->msg = (z_const char *)"too many length symbols";
                 mode = BAD;
                 break;
             }

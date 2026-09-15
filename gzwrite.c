@@ -4,14 +4,15 @@
  */
 
 #include "gzguts.h"
+#if !defined(_WIN32)
 #include <sys/types.h>
 #include <unistd.h>
+#endif
 
 /* Initialize state for writing a gzip file.  Mark initialization by setting
    state->size to non-zero.  Return -1 on a memory allocation failure, or 0 on
    success. */
-local int gz_init(gz_statep state)
-{
+local int gz_init(gz_statep state) {
     int ret;
     z_streamp strm = &(state->strm);
 
@@ -65,8 +66,7 @@ local int gz_init(gz_statep state)
    deflate() flush value.  If flush is Z_FINISH, then the deflate() state is
    reset to start a new gzip stream.  If gz->direct is true, then simply write
    to the output file without compressing, and ignore flush. */
-local int gz_comp(gz_statep state, int flush)
-{
+local int gz_comp(gz_statep state, int flush) {
     int ret, writ;
     unsigned have, put, max = ((unsigned)-1 >> 2) + 1;
     z_streamp strm = &(state->strm);
@@ -83,9 +83,8 @@ local int gz_comp(gz_statep state, int flush)
             put = strm->avail_in > max ? max : strm->avail_in;
             writ = (int)write(state->fd, strm->next_in, put);
             if (writ < 0) {
-                if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                if (errno == EAGAIN || errno == EWOULDBLOCK)
                     state->again = 1;
-				}
                 gz_error(state, Z_ERRNO, zstrerror());
                 return -1;
             }
@@ -119,9 +118,8 @@ local int gz_comp(gz_statep state, int flush)
                       (unsigned)(strm->next_out - state->x.next);
                 writ = (int)write(state->fd, state->x.next, put);
                 if (writ < 0) {
-                    if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                    if (errno == EAGAIN || errno == EWOULDBLOCK)
                         state->again = 1;
-					}
                     gz_error(state, Z_ERRNO, zstrerror());
                     return -1;
                 }
@@ -157,8 +155,7 @@ local int gz_comp(gz_statep state, int flush)
    memory allocation failure by gz_comp(), or 0 on success. state->skip is
    updated with the number of successfully written zeros, in case there is a
    stall on a non-blocking write destination. */
-local int gz_zero(gz_statep state)
-{
+local int gz_zero(gz_statep state) {
     int first, ret;
     unsigned n;
     z_streamp strm = &(state->strm);
@@ -192,8 +189,7 @@ local int gz_zero(gz_statep state)
    the returned value is less than len, then there was an error. If the error
    was a non-blocking stall, then the number of bytes consumed is returned.
    For any other error, 0 is returned. */
-local z_size_t gz_write(gz_statep state, voidpc buf, z_size_t len)
-{
+local z_size_t gz_write(gz_statep state, voidpc buf, z_size_t len) {
     z_size_t put = len;
     int ret;
 
@@ -286,8 +282,7 @@ int ZEXPORT gzwrite(gzFile file, voidpc buf, unsigned len) {
 
 /* -- see zlib.h -- */
 z_size_t ZEXPORT gzfwrite(voidpc buf, z_size_t size, z_size_t nitems,
-                          gzFile file)
-{
+                          gzFile file) {
     z_size_t len;
     gz_statep state;
 
