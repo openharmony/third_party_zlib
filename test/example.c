@@ -1,9 +1,13 @@
 /* example.c -- usage example of the zlib compression library
- * Copyright (C) 1995-2006, 2011, 2016 Jean-loup Gailly
+ * Copyright (C) 1995-2026 Jean-loup Gailly
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
 /* @(#) $Id$ */
+
+#if defined(_WIN32) && !defined(_CRT_SECURE_NO_WARNINGS)
+#  define _CRT_SECURE_NO_WARNINGS
+#endif
 
 #include "zlib.h"
 #include <stdio.h>
@@ -13,8 +17,10 @@
 #  include <stdlib.h>
 #endif
 
-#if defined(VMS) || defined(RISCOS)
+#if defined(VMS)
 #  define TESTFILE "foo-gz"
+#elif defined(__riscos) && !defined(__TARGET_UNIXLIB__)
+#  define TESTFILE "foo/gz"
 #else
 #  define TESTFILE "foo.gz"
 #endif
@@ -36,14 +42,12 @@ static uLong dictId;    /* Adler32 value of the dictionary */
 
 #ifdef Z_SOLO
 
-static void *myalloc(void *q, unsigned n, unsigned m)
-{
+static void *myalloc(void *q, unsigned n, unsigned m) {
     (void)q;
     return calloc(n, m);
 }
 
-static void myfree(void *q, void *p)
-{
+static void myfree(void *q, void *p) {
     (void)q;
     free(p);
 }
@@ -60,8 +64,7 @@ static free_func zfree = (free_func)0;
  * Test compress() and uncompress()
  */
 static void test_compress(Byte *compr, uLong comprLen, Byte *uncompr,
-                   uLong uncomprLen)
-{
+                   uLong uncomprLen) {
     int err;
     uLong len = (uLong)strlen(hello)+1;
 
@@ -84,8 +87,7 @@ static void test_compress(Byte *compr, uLong comprLen, Byte *uncompr,
 /* ===========================================================================
  * Test read/write of .gz files
  */
-static void test_gzio(const char *fname, Byte *uncompr, uLong uncomprLen)
-{
+static void test_gzio(const char *fname, Byte *uncompr, uLong uncomprLen) {
 #ifdef NO_GZCOMPRESS
     fprintf(stderr, "NO_GZCOMPRESS -- gz* functions cannot compress\n");
 #else
@@ -167,8 +169,7 @@ static void test_gzio(const char *fname, Byte *uncompr, uLong uncomprLen)
 /* ===========================================================================
  * Test deflate() with small buffers
  */
-static void test_deflate(Byte *compr, uLong comprLen)
-{
+static void test_deflate(Byte *compr, uLong comprLen) {
     z_stream c_stream; /* compression stream */
     int err;
     uLong len = (uLong)strlen(hello)+1;
@@ -192,10 +193,7 @@ static void test_deflate(Byte *compr, uLong comprLen)
     for (;;) {
         c_stream.avail_out = 1;
         err = deflate(&c_stream, Z_FINISH);
-        if (err == Z_STREAM_END)
-        {
-            break;
-        } 
+        if (err == Z_STREAM_END) break;
         CHECK_ERR(err, "deflate");
     }
 
@@ -207,8 +205,7 @@ static void test_deflate(Byte *compr, uLong comprLen)
  * Test inflate() with small buffers
  */
 static void test_inflate(Byte *compr, uLong comprLen, Byte *uncompr,
-                  uLong uncomprLen)
-{
+                  uLong uncomprLen) {
     int err;
     z_stream d_stream; /* decompression stream */
 
@@ -228,10 +225,7 @@ static void test_inflate(Byte *compr, uLong comprLen, Byte *uncompr,
     while (d_stream.total_out < uncomprLen && d_stream.total_in < comprLen) {
         d_stream.avail_in = d_stream.avail_out = 1; /* force small buffers */
         err = inflate(&d_stream, Z_NO_FLUSH);
-        if (err == Z_STREAM_END) 
-        {
-            break;
-        }
+        if (err == Z_STREAM_END) break;
         CHECK_ERR(err, "inflate");
     }
 
@@ -250,8 +244,7 @@ static void test_inflate(Byte *compr, uLong comprLen, Byte *uncompr,
  * Test deflate() with large buffers and dynamic change of compression level
  */
 static void test_large_deflate(Byte *compr, uLong comprLen, Byte *uncompr,
-                        uLong uncomprLen)
-{
+                        uLong uncomprLen) {
     z_stream c_stream; /* compression stream */
     int err;
 
@@ -304,8 +297,7 @@ static void test_large_deflate(Byte *compr, uLong comprLen, Byte *uncompr,
  * Test inflate() with large buffers
  */
 static void test_large_inflate(Byte *compr, uLong comprLen, Byte *uncompr,
-                        uLong uncomprLen)
-{
+                        uLong uncomprLen) {
     int err;
     z_stream d_stream; /* decompression stream */
 
@@ -325,10 +317,7 @@ static void test_large_inflate(Byte *compr, uLong comprLen, Byte *uncompr,
         d_stream.next_out = uncompr;            /* discard the output */
         d_stream.avail_out = (uInt)uncomprLen;
         err = inflate(&d_stream, Z_NO_FLUSH);
-        if (err == Z_STREAM_END) 
-        {
-            break;
-        }
+        if (err == Z_STREAM_END) break;
         CHECK_ERR(err, "large inflate");
     }
 
@@ -336,7 +325,7 @@ static void test_large_inflate(Byte *compr, uLong comprLen, Byte *uncompr,
     CHECK_ERR(err, "inflateEnd");
 
     if (d_stream.total_out != 2*uncomprLen + uncomprLen/2) {
-        fprintf(stderr, "bad large inflate: %ld\n", d_stream.total_out);
+        fprintf(stderr, "bad large inflate: %lu\n", d_stream.total_out);
         exit(1);
     } else {
         printf("large_inflate(): OK\n");
@@ -346,8 +335,7 @@ static void test_large_inflate(Byte *compr, uLong comprLen, Byte *uncompr,
 /* ===========================================================================
  * Test deflate() with full flush
  */
-static void test_flush(Byte *compr, uLong *comprLen)
-{
+static void test_flush(Byte *compr, uLong *comprLen) {
     z_stream c_stream; /* compression stream */
     int err;
     uInt len = (uInt)strlen(hello)+1;
@@ -383,8 +371,7 @@ static void test_flush(Byte *compr, uLong *comprLen)
  * Test inflateSync()
  */
 static void test_sync(Byte *compr, uLong comprLen, Byte *uncompr,
-                      uLong uncomprLen)
-{
+                      uLong uncomprLen) {
     int err;
     z_stream d_stream; /* decompression stream */
 
@@ -424,8 +411,7 @@ static void test_sync(Byte *compr, uLong comprLen, Byte *uncompr,
 /* ===========================================================================
  * Test deflate() with preset dictionary
  */
-static void test_dict_deflate(Byte *compr, uLong comprLen)
-{
+static void test_dict_deflate(Byte *compr, uLong comprLen) {
     z_stream c_stream; /* compression stream */
     int err;
 
@@ -460,8 +446,7 @@ static void test_dict_deflate(Byte *compr, uLong comprLen)
  * Test inflate() with a preset dictionary
  */
 static void test_dict_inflate(Byte *compr, uLong comprLen, Byte *uncompr,
-                       uLong uncomprLen)
-{
+                       uLong uncomprLen) {
     int err;
     z_stream d_stream; /* decompression stream */
 
@@ -482,10 +467,7 @@ static void test_dict_inflate(Byte *compr, uLong comprLen, Byte *uncompr,
 
     for (;;) {
         err = inflate(&d_stream, Z_NO_FLUSH);
-        if (err == Z_STREAM_END)
-        {
-            break;
-        }
+        if (err == Z_STREAM_END) break;
         if (err == Z_NEED_DICT) {
             if (d_stream.adler != dictId) {
                 fprintf(stderr, "unexpected dictionary");
@@ -511,9 +493,8 @@ static void test_dict_inflate(Byte *compr, uLong comprLen, Byte *uncompr,
 /* ===========================================================================
  * Usage:  example [output.gz  [input.gz]]
  */
-#define THREE 3
-int main(int argc, char *argv[])
-{
+
+int main(int argc, char *argv[]) {
     Byte *compr, *uncompr;
     uLong uncomprLen = 20000;
     uLong comprLen = 3 * uncomprLen;
@@ -529,7 +510,7 @@ int main(int argc, char *argv[])
     }
 
     printf("zlib version %s = 0x%04x, compile flags = 0x%lx\n",
-            ZLIB_VERSION, ZLIB_VERNUM, zlibCompileFlags());
+            ZLIB_VERSION, (unsigned)ZLIB_VERNUM, zlibCompileFlags());
 
     compr    = (Byte*)calloc((uInt)comprLen, 1);
     uncompr  = (Byte*)calloc((uInt)uncomprLen, 1);
@@ -559,7 +540,7 @@ int main(int argc, char *argv[])
 
     test_flush(compr, &comprLen);
     test_sync(compr, comprLen, uncompr, uncomprLen);
-    comprLen = THREE * uncomprLen;
+    comprLen = 3 * uncomprLen;
 
     test_dict_deflate(compr, comprLen);
     test_dict_inflate(compr, comprLen, uncompr, uncomprLen);

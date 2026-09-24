@@ -1,14 +1,13 @@
 /* unzip.h -- IO for uncompress .zip files using zlib
-   Version 1.1, February 14h, 2010
-   part of the MiniZip project - ( http://www.winimage.com/zLibDll/minizip.html )
+   part of the MiniZip project - ( https://www.winimage.com/zLibDll/minizip.html )
 
-         Copyright (C) 1998-2010 Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
+         Copyright (C) 1998-2026 Gilles Vollant (minizip) ( https://www.winimage.com/zLibDll/minizip.html )
 
          Modifications of Unzip for Zip64
          Copyright (C) 2007-2008 Even Rouault
 
          Modifications for Zip64 support on both zip and unzip
-         Copyright (C) 2009-2010 Mathias Svensson ( http://result42.com )
+         Copyright (C) 2009-2010 Mathias Svensson ( https://result42.com )
 
          For more info read MiniZip_info.txt
 
@@ -69,6 +68,8 @@ typedef unzFile__ *unzFile;
 #else
 typedef voidp unzFile;
 #endif
+
+extern const char unz_copyright[];
 
 
 #define UNZ_OK                          (0)
@@ -195,23 +196,23 @@ extern unzFile ZEXPORT unzOpen2_64(const void *path,
       for read/write the zip file (see ioapi.h)
 */
 
+/* OpenHarmony extensions. unzOpenFile uses an already opened FILE and may
+   move its position. On a ZIP parse error it closes that FILE, matching the
+   historical contract. After success, unzCloseFile frees the unzip state but
+   leaves the FILE open for the caller. */
+extern unzFile ZEXPORT unzOpenFile(FILE *inputfile);
+extern int ZEXPORT unzCloseFile(unzFile file);
+
+/* Locate a name while obtaining it during directory traversal. On success the
+   entry becomes current. The comparison mode matches unzLocateFile(). */
+extern int ZEXPORT unzLocateFile2(unzFile file, const char *szFileName,
+                                  int iCaseSensitivity);
+
 extern int ZEXPORT unzClose(unzFile file);
 /*
   Close a ZipFile opened with unzOpen.
   If there is files inside the .Zip opened with unzOpenCurrentFile (see later),
     these files MUST be closed with unzCloseCurrentFile before call unzClose.
-  return UNZ_OK if there is no problem. */
-
-extern unzFile ZEXPORT unzOpenFile OF((FILE *inputfile));
-/*
-  Open an opened zip file.
-*/
-
-extern int ZEXPORT unzCloseFile OF((unzFile file));
-/*
-  Close a ZipFile opened with unzOpenFile.
-  If there is files inside the .Zip opened with unzOpenCurrentFile(see before),
-    these files MUST be closed with unzCloseCurrentFile before call unzCloseFile.
   return UNZ_OK if there is no problem. */
 
 extern int ZEXPORT unzGetGlobalInfo(unzFile file,
@@ -263,17 +264,6 @@ extern int ZEXPORT unzLocateFile(unzFile file,
   UNZ_END_OF_LIST_OF_FILE if the file is not found
 */
 
-extern int ZEXPORT unzLocateFile2 OF((unzFile file,
-                     const char *szFileName,
-                     int iCaseSensitivity));
-/*
-  Try locate the file szFileName in the zipfile, like unzLocateFile, but provide performance optimization.
-  For the iCaseSensitivity signification, see unzStringFileNameCompare
-
-  return value :
-  UNZ_OK if the file is found. It becomes the current file.
-  UNZ_END_OF_LIST_OF_FILE if the file is not found
-*/
 
 /* ****************************************** */
 /* Ryan supplied functions */
@@ -336,6 +326,10 @@ extern int ZEXPORT unzGetCurrentFileInfo(unzFile file,
             This is the Central-header version of the extra field
   if szComment!=NULL, the comment string of the file will be copied in szComment
             (commentBufferSize is the size of the buffer)
+  The file name and comment will be zero-terminated if there is room in the
+  provided buffer. Otherwise the buffer will contain as much as will fit. If at
+  least 65537 bytes of room is provided, then the result will always be
+  complete and zero-terminated.
 */
 
 
